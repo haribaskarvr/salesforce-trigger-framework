@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bypass_All_Actions__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Emergency bypass - disable all trigger actions for this object</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Bypass All Actions</label>
+    <type>Checkbox</type>
+</CustomField>

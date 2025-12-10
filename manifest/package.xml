@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ========================================== -->
+    <!-- TRIGGER FRAMEWORK PACKAGE                  -->
+    <!-- ========================================== -->
+    <!-- This package contains all components of    -->
+    <!-- the Trigger Actions Framework              -->
+    <!-- ========================================== -->
+
+    <!-- Core Apex Classes -->
+    <types>
+        <members>ITriggerHandler</members>
+        <members>TriggerContext</members>
+        <members>TriggerHandler</members>
+        <members>AsyncTriggerHandler</members>
+        <members>TriggerHandlerUtils</members>
+        <members>TriggerHandlerConstants</members>
+        <members>TriggerBypassManager</members>
+        <name>ApexClass</name>
+    </types>
+
+    <!-- Example Handler Classes -->
+    <types>
+        <members>Example_AccountTriggerHandler</members>
+        <name>ApexClass</name>
+    </types>
+
+    <!-- Test Classes -->
+    <types>
+        <members>AsyncTriggerHandlerTest</members>
+        <members>TriggerContextTest</members>
+        <members>TriggerHandlerTest</members>
+        <members>TriggerHandlerUtilsTest</members>
+        <members>TriggerHandlerConstantsTest</members>
+        <members>TriggerBypassManagerTest</members>
+        <members>Example_AccountTriggerHandlerTest</members>
+        <name>ApexClass</name>
+    </types>
+
+    <!-- Example Trigger -->
+    <types>
+        <members>AccountTrigger</members>
+        <name>ApexTrigger</name>
+    </types>
+
+    <!-- Custom Metadata Types (Structure) -->
+    <types>
+        <members>Trigger_Handler_Config__mdt</members>
+        <members>Trigger_Action__mdt</members>
+        <name>CustomObject</name>
+    </types>
+
+    <!-- Custom Metadata Type Fields - Trigger_Handler_Config__mdt -->
+    <types>
+        <members>Trigger_Handler_Config__mdt.Object_API_Name__c</members>
+        <members>Trigger_Handler_Config__mdt.Active__c</members>
+        <members>Trigger_Handler_Config__mdt.Bypass_All_Actions__c</members>
+        <members>Trigger_Handler_Config__mdt.Description__c</members>
+        <name>CustomField</name>
+    </types>
+
+    <!-- Custom Metadata Type Fields - Trigger_Action__mdt -->
+    <types>
+        <members>Trigger_Action__mdt.Trigger_Handler_Config__c</members>
+        <members>Trigger_Action__mdt.Apex_Class_Name__c</members>
+        <members>Trigger_Action__mdt.Method_Name__c</members>
+        <members>Trigger_Action__mdt.Trigger_Event__c</members>
+        <members>Trigger_Action__mdt.Execution_Order__c</members>
+        <members>Trigger_Action__mdt.Active__c</members>
+        <members>Trigger_Action__mdt.Asynchronous__c</members>
+        <members>Trigger_Action__mdt.User_Managed__c</members>
+        <members>Trigger_Action__mdt.Description__c</members>
+        <members>Trigger_Action__mdt.Bypassed_Methods__c</members>
+        <members>Trigger_Action__mdt.Usernames_to_Exclude__c</members>
+        <name>CustomField</name>
+    </types>
+
+    <!-- Custom Metadata Records for Trigger_Handler_Config__mdt - Example configurations-->
+    <types>
+        <members>Trigger_Handler_Config__mdt.Trigger_Handler_Config_Record</members>
+        <members>Trigger_Action.Account_Before_Update</members>
+        <name>CustomMetadata</name>
+    </types>
+
+    <!-- Custom Settings (Hierarchy) -->
+    <types>
+        <members>Trigger_Bypass__c</members>
+        <name>CustomObject</name>
+    </types>
+
+    <!-- Custom Settings Fields - Trigger_Bypass__c -->
+    <types>
+        <members>Trigger_Bypass__c.Bypass_All_Triggers__c</members>
+        <members>Trigger_Bypass__c.Bypass_Object_Triggers__c</members>
+        <members>Trigger_Bypass__c.Force_Bypass_Objects__c</members>
+        <name>CustomField</name>
+    </types>
+
+    <!-- Layouts for Custom Metadata Types -->
+    <types>
+        <members
+    >Trigger_Handler_Config__mdt-Trigger Handler Config Layout</members>
+        <members>Trigger_Action__mdt-Trigger Action Layout</members>
+        <name>Layout</name>
+    </types>
+
+    <version>65.0</version>
+</Package>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Account Before Update</label>
+    <protected>false</protected>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Apex_Class_Name__c</field>
+        <value xsi:type="xsd:string">Example_AccountTriggerHandler</value>
+    </values>
+    <values>
+        <field>Asynchronous__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Bypassed_Methods__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Execution_Order__c</field>
+        <value xsi:type="xsd:double">10.0</value>
+    </values>
+    <values>
+        <field>Method_Name__c</field>
+        <value xsi:type="xsd:string">validateAccounts</value>
+    </values>
+    <values>
+        <field>Trigger_Event__c</field>
+        <value xsi:type="xsd:string">Before Update</value>
+    </values>
+    <values>
+        <field>Trigger_Handler_Config__c</field>
+        <value xsi:type="xsd:string">Account_Trigger_Configuration</value>
+    </values>
+    <values>
+        <field>User_Managed__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Usernames_to_Exclude__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

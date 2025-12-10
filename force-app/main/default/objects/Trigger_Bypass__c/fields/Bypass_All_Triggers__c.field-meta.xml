@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bypass_All_Triggers__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, ALL triggers will be bypassed for this user/profile/org.</description>
+    <inlineHelpText>Use for data migrations or bulk operations. BE CAREFUL!</inlineHelpText>
+    <label>Bypass All Triggers</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

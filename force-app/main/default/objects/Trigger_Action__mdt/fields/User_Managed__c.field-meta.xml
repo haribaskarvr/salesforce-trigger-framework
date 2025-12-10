@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_Managed__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>If enabled, errors stop the transaction. If disabled, errors are logged but don&apos;t stop execution.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>User Managed</label>
+    <type>Checkbox</type>
+</CustomField>
