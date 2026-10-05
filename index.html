@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A metadata-driven Salesforce trigger framework with configurable actions, bypass controls, and asynchronous execution."
+    />
+    <meta name="theme-color" content="#111412" />
+    <title>Salesforce Trigger Framework</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --canvas: #111412;
+        --surface: #171b18;
+        --ink: #eef1ec;
+        --muted: #a1aaa3;
+        --soft: #727c75;
+        --line: #303732;
+        --mint: #b8d2c4;
+        --mint-strong: #d2e2d8;
+        --mono: "IBM Plex Mono", "Courier New", monospace;
+        --sans: "DM Sans", "Segoe UI", sans-serif;
+        --content: 1160px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 88px;
+      }
+
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .shell {
+        width: min(var(--content), calc(100% - 64px));
+        margin-inline: auto;
+      }
+
+      .site-header {
+        position: sticky;
+        z-index: 5;
+        top: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgb(17 20 18 / 94%);
+        backdrop-filter: blur(14px);
+      }
+
+      .nav {
+        display: flex;
+        min-height: 76px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+      }
+
+      .brand {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid #8f9b92;
+        border-radius: 5px;
+        color: var(--mint-strong);
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 3.5vw, 44px);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        font-size: 14px;
+        transition: color 160ms ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        color: var(--mint-strong);
+      }
+
+      .hero {
+        position: relative;
+        display: flex;
+        min-height: min(680px, calc(100svh - 76px));
+        align-items: center;
+        overflow: hidden;
+        border-bottom: 1px solid var(--line);
+        background-image: linear-gradient(90deg, rgb(255 255 255 / 2.2%) 1px, transparent 1px);
+        background-size: 120px 100%;
+      }
+
+      .hero::after {
+        position: absolute;
+        right: -10%;
+        bottom: -48%;
+        width: 60vw;
+        height: 80%;
+        border: 1px solid rgb(184 210 196 / 7%);
+        border-radius: 50%;
+        content: "";
+        pointer-events: none;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding-block: 100px 112px;
+        animation: settle-in 600ms ease-out both;
+      }
+
+      .eyebrow,
+      .section-kicker,
+      .micro-label {
+        color: var(--mint);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin: 0 0 24px;
+      }
+
+      .eyebrow::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--mint);
+        content: "";
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 940px;
+        margin-bottom: 18px;
+        font-size: clamp(52px, 8vw, 96px);
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 0.99;
+      }
+
+      h1 span {
+        color: var(--mint);
+      }
+
+      .hero-lede {
+        max-width: 740px;
+        margin-bottom: 34px;
+        color: var(--muted);
+        font-size: clamp(17px, 2vw, 21px);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 19px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        transition:
+          background 160ms ease,
+          border-color 160ms ease,
+          color 160ms ease;
+      }
+
+      .button-primary {
+        border-color: var(--mint-strong);
+        background: var(--mint-strong);
+        color: #17211b;
+      }
+
+      .button-primary:hover {
+        border-color: white;
+        background: white;
+      }
+
+      .button-secondary:hover {
+        border-color: var(--mint);
+        color: var(--mint-strong);
+      }
+
+      .button svg,
+      .text-link svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px 22px;
+        margin-top: 52px;
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .hero-meta span::before {
+        margin-right: 9px;
+        color: var(--mint);
+        content: "/";
+      }
+
+      .section {
+        padding-block: 92px 100px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section-heading {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.75fr) minmax(0, 2fr);
+        gap: 28px;
+        align-items: start;
+        margin-bottom: 48px;
+      }
+
+      .section-kicker {
+        margin: 8px 0 0;
+      }
+
+      .section-heading h2 {
+        max-width: 780px;
+        margin-bottom: 0;
+        font-size: clamp(32px, 5vw, 52px);
+        font-weight: 500;
+        letter-spacing: 0;
+        line-height: 1.12;
+      }
+
+      .section-heading h2 .accent {
+        color: var(--mint);
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+        gap: 70px;
+        align-items: start;
+      }
+
+      .overview-copy {
+        max-width: 620px;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .principles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-top: 1px solid var(--line);
+      }
+
+      .principle {
+        min-height: 108px;
+        padding: 18px 12px 18px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .principle:nth-child(odd) {
+        border-right: 1px solid var(--line);
+      }
+
+      .principle:nth-child(even) {
+        padding-left: 20px;
+      }
+
+      .principle strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--ink);
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .principle span {
+        color: var(--soft);
+        font-size: 13px;
+      }
+
+      .diagram-wrap {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: var(--surface);
+      }
+
+      .diagram-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .diagram-topline span:last-child {
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+
+      .flow-diagram {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .flow-diagram .node {
+        fill: #1d2420;
+        stroke: #55635a;
+        stroke-width: 1;
+      }
+
+      .flow-diagram .node-primary {
+        fill: #25342b;
+        stroke: #91b19d;
+      }
+
+      .flow-diagram .edge {
+        fill: none;
+        stroke: #718078;
+        stroke-width: 1.2;
+      }
+
+      .flow-diagram .edge-accent {
+        stroke: #b8d2c4;
+      }
+
+      .flow-diagram .label {
+        fill: #eef1ec;
+        font-family: "IBM Plex Mono", "Courier New", monospace;
+        font-size: 12px;
+      }
+
+      .flow-diagram .sub-label {
+        fill: #9ca79f;
+        font-family: "IBM Plex Mono", "Courier New", monospace;
+        font-size: 9px;
+      }
+
+      .diagram-note {
+        margin: 19px 0 0;
+        color: var(--soft);
+        font-size: 13px;
+      }
+
+      .component-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-top: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+
+      .component {
+        position: relative;
+        min-height: 180px;
+        padding: 24px 26px 26px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        transition: background 180ms ease;
+      }
+
+      .component:hover {
+        background: var(--surface);
+      }
+
+      .component-index {
+        color: var(--mint);
+        font-family: var(--mono);
+        font-size: 11px;
+      }
+
+      .component h3 {
+        margin: 20px 0 6px;
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      .component p {
+        max-width: 460px;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .component code,
+      .inline-code {
+        color: var(--mint-strong);
+        font-family: var(--mono);
+        font-size: 0.9em;
+      }
+
+      .source-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+        gap: 64px;
+        align-items: start;
+      }
+
+      .source-intro p {
+        max-width: 420px;
+        margin-bottom: 25px;
+        color: var(--muted);
+      }
+
+      .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--mint-strong);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .text-link:hover {
+        color: white;
+      }
+
+      .tree {
+        margin: 0;
+        padding: 22px 24px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: var(--surface);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.9;
+      }
+
+      .tree .tree-focus {
+        color: var(--mint-strong);
+      }
+
+      .command-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .command {
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        background: var(--surface);
+      }
+
+      .command-head {
+        display: flex;
+        min-height: 50px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 15px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .command-head span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .copy-button {
+        display: inline-flex;
+        min-width: 56px;
+        min-height: 32px;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding-inline: 8px;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        background: transparent;
+        color: var(--soft);
+        cursor: pointer;
+        font-size: 11px;
+      }
+
+      .copy-button:hover,
+      .copy-button:focus-visible {
+        border-color: var(--line);
+        color: var(--mint-strong);
+      }
+
+      .copy-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .command pre {
+        min-height: 84px;
+        margin: 0;
+        padding: 18px 16px;
+        overflow-x: auto;
+        color: var(--mint-strong);
+        font-family: var(--mono);
+        font-size: 12px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .command.full {
+        grid-column: 1 / -1;
+      }
+
+      .command.full pre {
+        min-height: auto;
+      }
+
+      .command-caption {
+        display: block;
+        margin-top: 7px;
+        color: var(--soft);
+        font-size: 12px;
+      }
+
+      .closing {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 30px;
+        padding-block: 46px;
+      }
+
+      .closing p {
+        margin-bottom: 0;
+        color: var(--soft);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .closing a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .closing a:hover {
+        color: var(--mint-strong);
+      }
+
+      .closing svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--mint);
+        outline-offset: 4px;
+      }
+
+      @keyframes settle-in {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100% - 40px, var(--content));
+        }
+
+        .nav {
+          min-height: 68px;
+        }
+
+        .nav-links {
+          gap: 18px;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .nav-links::-webkit-scrollbar {
+          display: none;
+        }
+
+        .nav-links a {
+          font-size: 12px;
+          white-space: nowrap;
+        }
+
+        .hero {
+          min-height: 570px;
+          min-height: min(700px, calc(100svh - 68px));
+          background-size: 80px 100%;
+        }
+
+        .hero-content {
+          padding-block: 86px;
+        }
+
+        .section {
+          padding-block: 70px 76px;
+        }
+
+        .section-heading {
+          grid-template-columns: 1fr;
+          gap: 16px;
+          margin-bottom: 34px;
+        }
+
+        .section-kicker {
+          margin-top: 0;
+        }
+
+        .overview-grid,
+        .source-layout {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+
+        .component-list {
+          grid-template-columns: 1fr;
+        }
+
+        .component {
+          min-height: 0;
+          padding: 20px;
+        }
+
+        .component h3 {
+          margin-top: 14px;
+        }
+
+        .command-list {
+          grid-template-columns: 1fr;
+        }
+
+        .command.full {
+          grid-column: auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .shell {
+          width: calc(100% - 36px);
+        }
+
+        .brand {
+          width: 38px;
+          height: 38px;
+        }
+
+        .nav {
+          gap: 15px;
+        }
+
+        .nav-links {
+          gap: 15px;
+        }
+
+        .nav-links li:nth-child(3),
+        .nav-links li:nth-child(4) {
+          display: none;
+        }
+
+        h1 {
+          font-size: clamp(47px, 14vw, 64px);
+        }
+
+        .hero-lede {
+          font-size: 17px;
+        }
+
+        .hero-meta {
+          margin-top: 38px;
+        }
+
+        .button {
+          min-height: 45px;
+          padding-inline: 14px;
+          font-size: 13px;
+        }
+
+        .principles {
+          grid-template-columns: 1fr;
+        }
+
+        .principle,
+        .principle:nth-child(even) {
+          min-height: 0;
+          padding: 14px 0;
+          border-right: 0;
+        }
+
+        .diagram-wrap {
+          padding: 16px;
+        }
+
+        .closing {
+          align-items: start;
+          flex-direction: column;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Primary">
+        <a class="brand" href="#top" aria-label="Trigger Framework home">TF</a>
+        <ul class="nav-links">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#components">Components</a></li>
+          <li><a href="#source">Source</a></li>
+          <li><a href="#deploy">Deploy</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="shell hero-content">
+          <p class="eyebrow">Open source · Salesforce DX</p>
+          <h1 id="hero-title">Trigger logic,<br /><span>with a framework.</span></h1>
+          <p class="hero-lede">
+            A metadata-driven foundation for Salesforce automation. Keep trigger entry points lean,
+            actions configurable, and execution under control.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#deploy">
+              Get started
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" />
+              </svg>
+            </a>
+            <a
+              class="button button-secondary"
+              href="https://github.com/haribaskarvr/salesforce-trigger-framework"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View on GitHub
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M14 5h5v5m0-5-9 9" stroke="currentColor" stroke-width="1.7" />
+                <path d="M18 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="1.7" />
+              </svg>
+            </a>
+          </div>
+          <div class="hero-meta" aria-label="Project highlights">
+            <span>Apex</span>
+            <span>Custom metadata</span>
+            <span>Async-ready</span>
+            <span>API 65.0</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="overview" aria-labelledby="overview-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-kicker">01 / Overview</p>
+            <h2 id="overview-title">A clear place for every part of <span class="accent">trigger work.</span></h2>
+          </div>
+          <div class="overview-grid">
+            <p class="overview-copy">
+              This Salesforce DX package brings trigger context, handler orchestration, action
+              configuration, bypass management, and asynchronous execution into one cohesive
+              framework. Configure behavior with metadata while keeping Apex responsibilities
+              explicit.
+            </p>
+            <div class="principles" aria-label="Framework capabilities">
+              <div class="principle">
+                <strong>Metadata-driven</strong>
+                <span>Configure handlers and actions</span>
+              </div>
+              <div class="principle">
+                <strong>Context-aware</strong>
+                <span>Central trigger context model</span>
+              </div>
+              <div class="principle">
+                <strong>Bypass controls</strong>
+                <span>Manage trigger bypass behavior</span>
+              </div>
+              <div class="principle">
+                <strong>Async execution</strong>
+                <span>Support asynchronous handlers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="architecture" aria-labelledby="architecture-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-kicker">02 / Architecture</p>
+            <h2 id="architecture-title">One entry point.<br /><span class="accent">Composable behavior.</span></h2>
+          </div>
+          <div class="diagram-wrap">
+            <div class="diagram-topline">
+              <span class="micro-label">Execution path</span>
+              <span>ACCOUNT · BEFORE UPDATE</span>
+            </div>
+            <svg
+              class="flow-diagram"
+              viewBox="0 0 920 230"
+              role="img"
+              aria-labelledby="diagram-title diagram-description"
+            >
+              <title id="diagram-title">Trigger framework execution flow</title>
+              <desc id="diagram-description">
+                An Account trigger passes execution context to the trigger handler, which reads
+                handler and action configuration, then runs the configured Apex action.
+              </desc>
+              <path class="edge edge-accent" d="M166 105h54" />
+              <path class="edge edge-accent" d="M394 105h54" />
+              <path class="edge" d="M622 105h54" />
+              <path class="edge" d="M508 139v38h282v-38" />
+              <path class="edge" d="M508 177H280v-38" />
+              <circle cx="220" cy="105" r="3" fill="#b8d2c4" />
+              <circle cx="448" cy="105" r="3" fill="#b8d2c4" />
+              <circle cx="676" cy="105" r="3" fill="#b8d2c4" />
+              <rect class="node" x="16" y="71" width="150" height="68" rx="4" />
+              <rect class="node node-primary" x="220" y="71" width="174" height="68" rx="4" />
+              <rect class="node" x="448" y="71" width="174" height="68" rx="4" />
+              <rect class="node node-primary" x="676" y="71" width="190" height="68" rx="4" />
+              <text class="label" x="91" y="101" text-anchor="middle">AccountTrigger</text>
+              <text class="sub-label" x="91" y="120" text-anchor="middle">ENTRY POINT</text>
+              <text class="label" x="307" y="101" text-anchor="middle">TriggerHandler</text>
+              <text class="sub-label" x="307" y="120" text-anchor="middle">ORCHESTRATION</text>
+              <text class="label" x="535" y="101" text-anchor="middle">Configuration</text>
+              <text class="sub-label" x="535" y="120" text-anchor="middle">CUSTOM METADATA</text>
+              <text class="label" x="771" y="101" text-anchor="middle">Trigger Action</text>
+              <text class="sub-label" x="771" y="120" text-anchor="middle">APEX HANDLER</text>
+              <text class="sub-label" x="394" y="205" text-anchor="middle">CONTEXT · BYPASS · ASYNC EXECUTION</text>
+            </svg>
+            <p class="diagram-note">
+              The Account trigger is the example entry point; metadata types define handler and
+              action configuration.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="components" aria-labelledby="components-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-kicker">03 / Components</p>
+            <h2 id="components-title">Small building blocks.<br /><span class="accent">One consistent pattern.</span></h2>
+          </div>
+          <div class="component-list">
+            <article class="component">
+              <span class="component-index">01 — CONTRACT</span>
+              <h3>ITriggerHandler</h3>
+              <p>The interface that defines the framework's trigger handler contract.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">02 — CONTEXT</span>
+              <h3>TriggerContext</h3>
+              <p>A focused representation of the current trigger execution context.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">03 — ORCHESTRATION</span>
+              <h3>TriggerHandler</h3>
+              <p>The base handler responsible for coordinating framework trigger work.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">04 — ASYNC</span>
+              <h3>AsyncTriggerHandler</h3>
+              <p>A dedicated handler for asynchronous trigger execution.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">05 — CONTROL</span>
+              <h3>TriggerBypassManager</h3>
+              <p>Centralized bypass management backed by the <code>Trigger_Bypass__c</code> setting.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">06 — CONFIGURATION</span>
+              <h3>Custom metadata</h3>
+              <p><code>Trigger_Handler_Config__mdt</code> and <code>Trigger_Action__mdt</code> hold framework configuration.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">07 — UTILITIES</span>
+              <h3>TriggerHandlerUtils</h3>
+              <p>Shared utility methods and constants used throughout the framework.</p>
+            </article>
+            <article class="component">
+              <span class="component-index">08 — EXAMPLE</span>
+              <h3>Account implementation</h3>
+              <p>An example Account trigger and handler show how the framework is applied.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="source" aria-labelledby="source-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-kicker">04 / Source</p>
+            <h2 id="source-title">Familiar Salesforce DX.<br /><span class="accent">Easy to navigate.</span></h2>
+          </div>
+          <div class="source-layout">
+            <div class="source-intro">
+              <p>
+                Standard source format keeps Apex, triggers, custom metadata, objects, and layouts
+                together under <span class="inline-code">force-app</span>. The manifest is ready
+                when you want a targeted deployment.
+              </p>
+              <a
+                class="text-link"
+                href="https://github.com/haribaskarvr/salesforce-trigger-framework"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explore the repository
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.7" />
+                </svg>
+              </a>
+            </div>
+            <pre class="tree" aria-label="Project file structure"><code>force-app/main/default/
+├── <span class="tree-focus">classes/</span>       Apex framework &amp; tests
+├── <span class="tree-focus">triggers/</span>     AccountTrigger
+├── <span class="tree-focus">customMetadata/</span> handler &amp; action config
+├── <span class="tree-focus">objects/</span>      metadata types &amp; bypass setting
+└── <span class="tree-focus">layouts/</span>      configuration layouts
+
+manifest/package.xml</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="deploy" aria-labelledby="deploy-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="section-kicker">05 / Deploy &amp; verify</p>
+            <h2 id="deploy-title">From source to org.<br /><span class="accent">On your terms.</span></h2>
+          </div>
+          <div class="command-list">
+            <article class="command">
+              <div class="command-head">
+                <span>Deploy with manifest</span>
+                <button class="copy-button" type="button" aria-label="Copy deploy with manifest command">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="8" y="8" width="11" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v11A1.5 1.5 0 0 0 5.5 18H8" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <pre><code>sf project deploy start --manifest manifest/package.xml</code></pre>
+            </article>
+            <article class="command">
+              <div class="command-head">
+                <span>Deploy source</span>
+                <button class="copy-button" type="button" aria-label="Copy deploy source command">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="8" y="8" width="11" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v11A1.5 1.5 0 0 0 5.5 18H8" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <pre><code>sf project deploy start --source-dir force-app</code></pre>
+            </article>
+            <article class="command">
+              <div class="command-head">
+                <span>Validate before deploy</span>
+                <button class="copy-button" type="button" aria-label="Copy validation command">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="8" y="8" width="11" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v11A1.5 1.5 0 0 0 5.5 18H8" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <pre><code>sf project deploy validate --manifest manifest/package.xml</code></pre>
+            </article>
+            <article class="command">
+              <div class="command-head">
+                <span>Run Apex tests</span>
+                <button class="copy-button" type="button" aria-label="Copy Apex test command">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="8" y="8" width="11" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v11A1.5 1.5 0 0 0 5.5 18H8" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <pre><code>sf apex test run --test-level RunLocalTests --result-format human</code></pre>
+            </article>
+            <article class="command full">
+              <div class="command-head">
+                <span>Create a scratch org</span>
+                <button class="copy-button" type="button" aria-label="Copy scratch org setup commands">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="8" y="8" width="11" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v11A1.5 1.5 0 0 0 5.5 18H8" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <pre><code>sf org create scratch --definition-file config/project-scratch-def.json --alias trigger-framework
+sf project deploy start --source-dir force-app</code></pre>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell closing">
+      <p>Salesforce Trigger Framework · API 65.0</p>
+      <a
+        href="https://github.com/haribaskarvr/salesforce-trigger-framework"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Source on GitHub
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.6" />
+        </svg>
+      </a>
+    </footer>
+
+    <script>
+      document.querySelectorAll(".copy-button").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const command = button.closest(".command").querySelector("code").textContent;
+          const label = button.querySelector("span");
+
+          try {
+            await navigator.clipboard.writeText(command);
+            label.textContent = "Copied";
+          } catch {
+            label.textContent = "Unavailable";
+          }
+
+          window.setTimeout(() => {
+            label.textContent = "Copy";
+          }, 1600);
+        });
+      });
+    </script>
+  </body>
+</html>
